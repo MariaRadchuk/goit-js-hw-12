@@ -1,4 +1,3 @@
-
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
@@ -56,6 +55,7 @@ async function getPhoto(event) {
 function renderPhotos(photos) {
   if (photos.length === 0) {
     showErrorToast('Sorry, there are no images matching your search query. Please try again!');
+    hideLoadBtn(); 
     return;
   }
 
@@ -97,13 +97,12 @@ async function onLoadMoreClick() {
     const response = await api.get('', { params: { q: searchInput.value.trim(), page: ++page } });
     renderPhotos(response.data.hits);
     smoothScrollToNextGallery();
+    isLoadMore(response.data.totalHits); 
   } catch (error) {
     console.error('Error fetching data:', error);
   } finally {
     loader.classList.remove('visible');
   }
-  
-  isLoadMore();
 }
 
 function showErrorToast(message) {
@@ -129,8 +128,8 @@ function hideLoadBtn() {
   loadBtn.style.visibility = 'hidden';
 }
 
-function isLoadMore() {
-  if (totalHits <= page * 15) {
+function isLoadMore(totalHits) {
+  if (totalHits <= page * 15) { 
     hideLoadBtn();
     iziToast.info({
       message: "We're sorry, but you've reached the end of search results.",
